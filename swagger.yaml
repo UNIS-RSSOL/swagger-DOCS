@@ -1794,6 +1794,179 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/summary":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getStorePayrollSummary
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/OwnerPayrollSummaryDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/staff/{userStoreId}":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getStaffPayrollDetail
+      parameters:
+      - name: userStoreId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StaffPayrollResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/me":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getMyPayrolls
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/StaffMyPayrollResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
   "/api/notifications":
     get:
       tags:
@@ -2729,6 +2902,133 @@ components:
           - SUN
         status:
           type: string
+    OwnerPayrollSummaryDto:
+      type: object
+      properties:
+        storeId:
+          type: integer
+          format: int64
+        storeName:
+          type: string
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        totalStaffCount:
+          type: integer
+          format: int32
+        totalBasePay:
+          type: number
+        totalOvertimePay:
+          type: number
+        totalNightPay:
+          type: number
+        totalHolidayPay:
+          type: number
+        totalWeeklyAllowance:
+          type: number
+        grandTotalPay:
+          type: number
+        staffPayrolls:
+          type: array
+          items:
+            "$ref": "#/components/schemas/StaffPayrollResponseDto"
+    StaffPayrollResponseDto:
+      type: object
+      properties:
+        userStoreId:
+          type: integer
+          format: int64
+        staffName:
+          type: string
+        hourlyWage:
+          type: integer
+          format: int32
+        totalWorkMinutes:
+          type: integer
+          format: int64
+        breakMinutes:
+          type: integer
+          format: int64
+        overtimeMinutes:
+          type: integer
+          format: int64
+        nightWorkMinutes:
+          type: integer
+          format: int64
+        holidayWorkMinutes:
+          type: integer
+          format: int64
+        basePay:
+          type: number
+        overtimePay:
+          type: number
+        nightPay:
+          type: number
+        holidayPay:
+          type: number
+        weeklyAllowance:
+          type: number
+        totalPay:
+          type: number
+        totalShiftCount:
+          type: integer
+          format: int32
+        lateCount:
+          type: integer
+          format: int32
+        absenceCount:
+          type: integer
+          format: int32
+    StaffMyPayrollResponseDto:
+      type: object
+      properties:
+        storeId:
+          type: integer
+          format: int64
+        storeName:
+          type: string
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        hourlyWage:
+          type: integer
+          format: int32
+        totalWorkMinutes:
+          type: integer
+          format: int64
+        breakMinutes:
+          type: integer
+          format: int64
+        overtimeMinutes:
+          type: integer
+          format: int64
+        nightWorkMinutes:
+          type: integer
+          format: int64
+        holidayWorkMinutes:
+          type: integer
+          format: int64
+        basePay:
+          type: number
+        overtimePay:
+          type: number
+        nightPay:
+          type: number
+        holidayPay:
+          type: number
+        weeklyAllowance:
+          type: number
+        totalPay:
+          type: number
+        totalShiftCount:
+          type: integer
+          format: int32
     NotificationResponseDto:
       type: object
       properties:
