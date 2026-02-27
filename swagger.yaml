@@ -7,10 +7,161 @@ info:
     따라서 모든 error 분류와, message는 상황에 따라 다르게 출력됩니다.
   version: v1
 servers:
-- url: https://connecti.store
+- url: https://api.rssolplan.com
+- url: http://localhost:8080
 security:
 - bearerAuth: []
 paths:
+  "/api/todos/{todoId}":
+    put:
+      tags:
+      - todo-controller
+      operationId: updateTodo
+      parameters:
+      - name: todoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TodoUpdateRequestDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TodoResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+    delete:
+      tags:
+      - todo-controller
+      operationId: deleteTodo
+      parameters:
+      - name: todoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/staff/{userStoreId}/wage":
+    put:
+      tags:
+      - payroll-controller
+      operationId: updateStaffWage
+      parameters:
+      - name: userStoreId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StaffWageUpdateDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
   "/api/mypage/staff/profile":
     get:
       tags:
@@ -416,26 +567,25 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
-  "/api/shift-swap/requests":
-    post:
+  "/api/todos":
+    get:
       tags:
-      - shift-swap-controller
-      operationId: create
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ShiftSwapRequestCreateDto"
+      - todo-controller
+      operationId: getTodosByDate
+      parameters:
+      - name: date
+        in: query
         required: true
+        schema:
+          type: string
+          format: date
       responses:
         '200':
           description: OK
           content:
             "*/*":
               schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/ShiftSwapResponseDto"
+                "$ref": "#/components/schemas/TodoListResponseDto"
         '400':
           description: Bad Request
           content:
@@ -466,23 +616,15 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
-  "/api/schedules/{settingId}/generate":
     post:
       tags:
-      - schedule-generation-controller
-      operationId: createSchedule
-      parameters:
-      - name: settingId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
+      - todo-controller
+      operationId: createTodo
       requestBody:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/ScheduleGenerationRequestDto"
+              "$ref": "#/components/schemas/TodoCreateRequestDto"
         required: true
       responses:
         '200':
@@ -490,7 +632,245 @@ paths:
           content:
             "*/*":
               schema:
-                "$ref": "#/components/schemas/ScheduleGenerationResponseDto"
+                "$ref": "#/components/schemas/TodoResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/store-settings/temporary":
+    get:
+      tags:
+      - store-setting-controller
+      operationId: getTemporarySetting
+      parameters:
+      - name: key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StoreSettingDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+    post:
+      tags:
+      - store-setting-controller
+      operationId: saveTemporarySetting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StoreSettingDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+    delete:
+      tags:
+      - store-setting-controller
+      operationId: deleteTemporarySetting
+      parameters:
+      - name: key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/store-settings/temporary/apply":
+    post:
+      tags:
+      - store-setting-controller
+      operationId: applyTemporaryAsDefault
+      parameters:
+      - name: key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StoreSettingDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/shift-swap/requests":
+    post:
+      tags:
+      - shift-swap-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ShiftSwapRequestCreateDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ShiftSwapResponseDto"
         '400':
           description: Bad Request
           content:
@@ -617,11 +997,73 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
-  "/api/schedules/confirm":
+  "/api/schedules/requests/{scheduleRequestId}/generate":
+    post:
+      tags:
+      - schedule-generation-controller
+      operationId: generateSchedule
+      parameters:
+      - name: scheduleRequestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ScheduleGenerationRequestDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ScheduleGenerationResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/schedules/requests/{scheduleRequestId}/confirm":
     post:
       tags:
       - schedule-generation-controller
       operationId: confirmSchedule
+      parameters:
+      - name: scheduleRequestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -635,6 +1077,54 @@ paths:
             "*/*":
               schema:
                 type: object
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/admin/minimum-wage":
+    post:
+      tags:
+      - payroll-controller
+      operationId: createMinimumWage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/MinimumWageUpdateDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/MinimumWage"
         '400':
           description: Bad Request
           content:
@@ -1051,6 +1541,228 @@ paths:
             "*/*":
               schema:
                 type: string
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/attendance/check-out":
+    post:
+      tags:
+      - attendance-controller
+      operationId: checkOut
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/AttendanceCheckOutResponse"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/attendance/check-in":
+    post:
+      tags:
+      - attendance-controller
+      operationId: checkIn
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/AttendanceCheckInResponse"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/todos/{todoId}/toggle":
+    patch:
+      tags:
+      - todo-controller
+      operationId: toggleTodoCompleted
+      parameters:
+      - name: todoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TodoResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/store-settings":
+    get:
+      tags:
+      - store-setting-controller
+      operationId: getStoreSetting
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StoreSettingDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+    patch:
+      tags:
+      - store-setting-controller
+      operationId: updateStoreSetting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StoreSettingDto"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StoreSettingDto"
         '400':
           description: Bad Request
           content:
@@ -1544,6 +2256,61 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/store/staff/summary":
+    get:
+      tags:
+      - store-controller
+      operationId: getAllStaffSummary
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/AllStaffSummaryResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
   "/api/schedules":
     get:
       tags:
@@ -1645,18 +2412,27 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
-  "/api/schedules/redis":
+  "/api/schedules/requests/{storeId}/submission-status":
     get:
       tags:
       - schedule-generation-controller
-      operationId: redisTest
+      operationId: checkSubmissionStatus
+      parameters:
+      - name: storeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
           content:
             "*/*":
               schema:
-                type: string
+                type: object
+                additionalProperties:
+                  type: object
         '400':
           description: Bad Request
           content:
@@ -1764,6 +2540,103 @@ paths:
                 type: array
                 items:
                   "$ref": "#/components/schemas/CandidateSchedule"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/wages":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getAllStaffWages
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StoreStaffWagesResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/total":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getStorePayrollTotal
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/StorePayrollSummaryDto"
         '400':
           description: Bad Request
           content:
@@ -1910,6 +2783,158 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/store/employee/{userStoreId}":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getEmployeePayrollDetail
+      parameters:
+      - name: userStoreId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/EmployeePayrollDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/minimum-wage":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getMinimumWage
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/MinimumWage"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/minimum-wage/current":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getCurrentMinimumWage
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/MinimumWage"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
   "/api/payroll/me":
     get:
       tags:
@@ -1937,6 +2962,61 @@ paths:
                 type: array
                 items:
                   "$ref": "#/components/schemas/StaffMyPayrollResponseDto"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/payroll/me/total":
+    get:
+      tags:
+      - payroll-controller
+      operationId: getMyPayrollsTotal
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/MyPayrollListDto"
         '400':
           description: Bad Request
           content:
@@ -2102,6 +3182,158 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/attendance/today":
+    get:
+      tags:
+      - attendance-controller
+      operationId: getToday
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/AttendanceTodayResponse"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/administration-staff/employees/{userStoreId}/profile":
+    get:
+      tags:
+      - view-profile-controller
+      operationId: getEmployeeProfile
+      parameters:
+      - name: userStoreId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ViewProfileResponse"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+  "/api/administration-staff/employees/{userStoreId}/attendance":
+    get:
+      tags:
+      - view-attendance-controller
+      operationId: getEmployeeAttendance
+      parameters:
+      - name: userStoreId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ViewAttendanceResponse"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ApiResponseObject"
   "/api/mypage/staff/stores/{storeId}":
     delete:
       tags:
@@ -2213,6 +3445,54 @@ components:
           type: object
           description: 응답 데이터
       description: API 공통 응답 구조
+    TodoUpdateRequestDto:
+      type: object
+      properties:
+        content:
+          maxLength: 500
+          minLength: 0
+          type: string
+        completed:
+          type: boolean
+    TodoResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        date:
+          type: string
+          format: date
+        todoType:
+          type: string
+          enum:
+          - STORE
+          - HANDOVER
+          - PERSONAL
+        content:
+          type: string
+        completed:
+          type: boolean
+        authorId:
+          type: integer
+          format: int64
+        authorName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    StaffWageUpdateDto:
+      required:
+      - hourlyWage
+      type: object
+      properties:
+        hourlyWage:
+          minimum: 0
+          type: integer
+          format: int32
     StaffProfileUpdateRequest:
       type: object
       properties:
@@ -2351,6 +3631,67 @@ components:
           - INSERTED
           - UPDATED
           - DELETED
+    TodoCreateRequestDto:
+      required:
+      - content
+      - date
+      - todoType
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        todoType:
+          type: string
+          enum:
+          - STORE
+          - HANDOVER
+          - PERSONAL
+        content:
+          maxLength: 500
+          minLength: 0
+          type: string
+    LocalTime:
+      type: object
+      properties:
+        hour:
+          type: integer
+          format: int32
+        minute:
+          type: integer
+          format: int32
+        second:
+          type: integer
+          format: int32
+        nano:
+          type: integer
+          format: int32
+    SegmentDto:
+      type: object
+      properties:
+        startTime:
+          "$ref": "#/components/schemas/LocalTime"
+        endTime:
+          "$ref": "#/components/schemas/LocalTime"
+    StoreSettingDto:
+      type: object
+      properties:
+        openTime:
+          "$ref": "#/components/schemas/LocalTime"
+        closeTime:
+          "$ref": "#/components/schemas/LocalTime"
+        useSegments:
+          type: boolean
+        segments:
+          type: array
+          items:
+            "$ref": "#/components/schemas/SegmentDto"
+        hasBreakTime:
+          type: boolean
+        breakStartTime:
+          "$ref": "#/components/schemas/LocalTime"
+        breakEndTime:
+          "$ref": "#/components/schemas/LocalTime"
     ShiftSwapRequestCreateDto:
       type: object
       properties:
@@ -2391,70 +3732,6 @@ components:
         createdAt:
           type: string
           format: date-time
-    GenerationOptionsDto:
-      type: object
-      properties:
-        candidateCount:
-          type: integer
-          format: int32
-    ScheduleGenerationRequestDto:
-      type: object
-      properties:
-        generationOptions:
-          "$ref": "#/components/schemas/GenerationOptionsDto"
-    LocalTime:
-      type: object
-      properties:
-        hour:
-          type: integer
-          format: int32
-        minute:
-          type: integer
-          format: int32
-        second:
-          type: integer
-          format: int32
-        nano:
-          type: integer
-          format: int32
-    ScheduleGenerationResponseDto:
-      type: object
-      properties:
-        status:
-          type: string
-        scheduleSettingsId:
-          type: integer
-          format: int64
-        storeId:
-          type: integer
-          format: int64
-        timeSegments:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ScheduleSettingSegmentResponseDto"
-        candidateScheduleKey:
-          type: string
-        generatedCount:
-          type: integer
-          format: int32
-        unsubmittedEmployeeIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-    ScheduleSettingSegmentResponseDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        startTime:
-          "$ref": "#/components/schemas/LocalTime"
-        endTime:
-          "$ref": "#/components/schemas/LocalTime"
-        requiredStaff:
-          type: integer
-          format: int32
     WorkShiftCreateDto:
       type: object
       properties:
@@ -2492,23 +3769,101 @@ components:
     ScheduleRequestDto:
       type: object
       properties:
-        openTime:
-          "$ref": "#/components/schemas/LocalTime"
-        closeTime:
-          "$ref": "#/components/schemas/LocalTime"
         startDate:
           type: string
           format: date
         endDate:
           type: string
           format: date
+        staffRequirement:
+          "$ref": "#/components/schemas/StaffRequirementDto"
+    SegmentStaffDto:
+      type: object
+      properties:
+        segmentIndex:
+          type: integer
+          format: int32
+        requiredStaff:
+          type: integer
+          format: int32
+    StaffRequirementDto:
+      type: object
+      properties:
+        segmentStaffList:
+          type: array
+          items:
+            "$ref": "#/components/schemas/SegmentStaffDto"
+        requiredStaff:
+          type: integer
+          format: int32
+    ScheduleRequestResponseDto:
+      type: object
+      properties:
+        scheduleRequestId:
+          type: integer
+          format: int64
+        storeId:
+          type: integer
+          format: int64
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+    GenerationOptionsDto:
+      type: object
+      properties:
+        candidateCount:
+          type: integer
+          format: int32
+        strategies:
+          type: array
+          items:
+            type: string
+            enum:
+            - BALANCED
+            - COVERAGE_FIRST
+            - SENIOR_PRIORITY
+            - FAIR_DISTRIBUTION
+    ScheduleGenerationRequestDto:
+      type: object
+      properties:
+        generationOptions:
+          "$ref": "#/components/schemas/GenerationOptionsDto"
+    ScheduleGenerationResponseDto:
+      type: object
+      properties:
+        status:
+          type: string
+        scheduleRequestId:
+          type: integer
+          format: int64
+        storeId:
+          type: integer
+          format: int64
         timeSegments:
           type: array
           items:
-            "$ref": "#/components/schemas/ScheduleSettingSegmentRequestDto"
-    ScheduleSettingSegmentRequestDto:
+            "$ref": "#/components/schemas/ScheduleSettingSegmentResponseDto"
+        candidateScheduleKey:
+          type: string
+        generatedCount:
+          type: integer
+          format: int32
+        unsubmittedEmployeeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    ScheduleSettingSegmentResponseDto:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
         startTime:
           "$ref": "#/components/schemas/LocalTime"
         endTime:
@@ -2516,28 +3871,49 @@ components:
         requiredStaff:
           type: integer
           format: int32
-    ScheduleRequestResponseDto:
-      type: object
-      properties:
-        scheduleSettingId:
-          type: integer
-          format: int64
-        status:
-          type: string
     ConfirmScheduleRequestDto:
       type: object
       properties:
-        candidateKey:
-          type: string
-        index:
+        candidateIndex:
           type: integer
           format: int32
-        startDate:
+    MinimumWageUpdateDto:
+      type: object
+      properties:
+        hourlyWage:
+          type: integer
+          format: int32
+        effectiveFrom:
           type: string
           format: date
-        endDate:
+        effectiveTo:
           type: string
           format: date
+        description:
+          type: string
+    MinimumWage:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        hourlyWage:
+          type: integer
+          format: int32
+        effectiveFrom:
+          type: string
+          format: date
+        effectiveTo:
+          type: string
+          format: date
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     StaffJoinStoreRequest:
       type: object
       properties:
@@ -2659,6 +4035,8 @@ components:
           type: string
         businessRegistrationNumber:
           type: string
+        storeSetting:
+          "$ref": "#/components/schemas/StoreSettingDto"
         bankId:
           type: integer
           format: int32
@@ -2703,11 +4081,65 @@ components:
         hireDate:
           type: string
           format: date
+        storeSetting:
+          "$ref": "#/components/schemas/StoreSettingDto"
     DevTokenRequest:
       type: object
       properties:
         email:
           type: string
+    AttendanceCheckOutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        workDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - BEFORE_WORK
+          - WORKING
+          - FINISHED
+          - NO_SCHEDULE
+          - LATE
+          - ABSENT
+        checkOutTime:
+          type: string
+          format: date-time
+        workStartTime:
+          type: string
+          format: date-time
+        workEndTime:
+          type: string
+          format: date-time
+    AttendanceCheckInResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        workDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - BEFORE_WORK
+          - WORKING
+          - FINISHED
+          - NO_SCHEDULE
+          - LATE
+          - ABSENT
+        checkInTime:
+          type: string
+          format: date-time
+        workStartTime:
+          type: string
+          format: date-time
+        workEndTime:
+          type: string
+          format: date-time
     ShiftSwapRespondDto:
       type: object
       properties:
@@ -2841,6 +4273,24 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/AvailabilityItem"
+    TodoListResponseDto:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        storeTodos:
+          type: array
+          items:
+            "$ref": "#/components/schemas/TodoResponseDto"
+        handoverTodos:
+          type: array
+          items:
+            "$ref": "#/components/schemas/TodoResponseDto"
+        personalTodos:
+          type: array
+          items:
+            "$ref": "#/components/schemas/TodoResponseDto"
     StoreStaffResponse:
       type: object
       properties:
@@ -2849,6 +4299,57 @@ components:
           format: int64
         username:
           type: string
+    AllStaffSummaryResponseDto:
+      type: object
+      properties:
+        storeId:
+          type: integer
+          format: int64
+        storeName:
+          type: string
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        totalStaffCount:
+          type: integer
+          format: int32
+        staffList:
+          type: array
+          items:
+            "$ref": "#/components/schemas/StaffSummaryDto"
+    StaffSummaryDto:
+      type: object
+      properties:
+        username:
+          type: string
+        profileImageUrl:
+          type: string
+        role:
+          type: string
+        employmentStatus:
+          type: string
+        monthlyPay:
+          type: number
+        email:
+          type: string
+        tel:
+          type: string
+        bankName:
+          type: string
+        accountNumber:
+          type: string
+        lateCount:
+          type: integer
+          format: int32
+        absenceCount:
+          type: integer
+          format: int32
+        totalShiftCount:
+          type: integer
+          format: int32
     MyWorkShiftDto:
       type: object
       properties:
@@ -2878,6 +4379,19 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/CandidateShift"
+        strategyName:
+          type: string
+        strategyDescription:
+          type: string
+        totalShifts:
+          type: integer
+          format: int32
+        unassignedCount:
+          type: integer
+          format: int32
+        coverageRate:
+          type: number
+          format: double
     CandidateShift:
       type: object
       properties:
@@ -2902,6 +4416,128 @@ components:
           - SUN
         status:
           type: string
+    StaffWageInfoDto:
+      type: object
+      properties:
+        userStoreId:
+          type: integer
+          format: int64
+        staffName:
+          type: string
+        hourlyWage:
+          type: integer
+          format: int32
+        effectiveWage:
+          type: integer
+          format: int32
+    StoreStaffWagesResponseDto:
+      type: object
+      properties:
+        storeId:
+          type: integer
+          format: int64
+        storeName:
+          type: string
+        currentMinimumWage:
+          type: integer
+          format: int32
+        staffWages:
+          type: array
+          items:
+            "$ref": "#/components/schemas/StaffWageInfoDto"
+    EmployeePayrollDto:
+      type: object
+      properties:
+        userStoreId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        profileImageUrl:
+          type: string
+        storeName:
+          type: string
+        hourlyWage:
+          type: integer
+          format: int32
+        totalWorkMinutes:
+          type: integer
+          format: int64
+        regularMinutes:
+          type: integer
+          format: int64
+        overtimeMinutes:
+          type: integer
+          format: int64
+        nightMinutes:
+          type: integer
+          format: int64
+        holidayMinutes:
+          type: integer
+          format: int64
+        breakMinutes:
+          type: integer
+          format: int64
+        lateMinutes:
+          type: integer
+          format: int64
+        regularPay:
+          type: number
+        overtimePay:
+          type: number
+        nightPay:
+          type: number
+        holidayPay:
+          type: number
+        weeklyHolidayPay:
+          type: number
+        totalPay:
+          type: number
+        totalShiftCount:
+          type: integer
+          format: int32
+        lateCount:
+          type: integer
+          format: int32
+        absenceCount:
+          type: integer
+          format: int32
+    StorePayrollSummaryDto:
+      type: object
+      properties:
+        storeId:
+          type: integer
+          format: int64
+        storeName:
+          type: string
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        totalEmployees:
+          type: integer
+          format: int32
+        totalRegularPay:
+          type: number
+        totalOvertimePay:
+          type: number
+        totalNightPay:
+          type: number
+        totalHolidayPay:
+          type: number
+        totalWeeklyHolidayPay:
+          type: number
+        totalPay:
+          type: number
+        employees:
+          type: array
+          items:
+            "$ref": "#/components/schemas/EmployeePayrollDto"
     OwnerPayrollSummaryDto:
       type: object
       properties:
@@ -2961,6 +4597,9 @@ components:
         holidayWorkMinutes:
           type: integer
           format: int64
+        lateMinutes:
+          type: integer
+          format: int64
         basePay:
           type: number
         overtimePay:
@@ -3014,6 +4653,9 @@ components:
         holidayWorkMinutes:
           type: integer
           format: int64
+        lateMinutes:
+          type: integer
+          format: int64
         basePay:
           type: number
         overtimePay:
@@ -3029,6 +4671,34 @@ components:
         totalShiftCount:
           type: integer
           format: int32
+        lateCount:
+          type: integer
+          format: int32
+        absenceCount:
+          type: integer
+          format: int32
+    MyPayrollListDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        profileImageUrl:
+          type: string
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        grandTotalPay:
+          type: number
+        payrolls:
+          type: array
+          items:
+            "$ref": "#/components/schemas/EmployeePayrollDto"
     NotificationResponseDto:
       type: object
       properties:
@@ -3101,6 +4771,84 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/AvailabilityItem"
+    AttendanceTodayResponse:
+      type: object
+      properties:
+        workDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - BEFORE_WORK
+          - WORKING
+          - FINISHED
+          - NO_SCHEDULE
+          - LATE
+          - ABSENT
+        isCheckedIn:
+          type: boolean
+        isCheckedOut:
+          type: boolean
+        checkInTime:
+          type: string
+          format: date-time
+        checkOutTime:
+          type: string
+          format: date-time
+        workStartTime:
+          type: string
+          format: date-time
+        workEndTime:
+          type: string
+          format: date-time
+    ViewProfileResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        status:
+          type: string
+        position:
+          type: string
+        storeName:
+          type: string
+        bankName:
+          type: string
+        accountNumber:
+          type: string
+        email:
+          type: string
+        hireDate:
+          type: string
+          format: date
+        daysWorked:
+          type: integer
+          format: int64
+    ViewAttendanceDayDto:
+      type: object
+      properties:
+        workDate:
+          type: string
+          format: date
+        attendanceStatus:
+          type: string
+    ViewAttendanceResponse:
+      type: object
+      properties:
+        userStoreId:
+          type: integer
+          format: int64
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        attendances:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ViewAttendanceDayDto"
   securitySchemes:
     bearerAuth:
       type: http
